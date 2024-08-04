@@ -1,5 +1,7 @@
 from agents.baseagent import BaseAgent
 
+import random
+
 
 class Human(BaseAgent):
     def __init__(
@@ -47,6 +49,8 @@ class Human(BaseAgent):
                     self.x += dx // abs(dx)
                 if dy != 0:
                     self.y += dy // abs(dy)
+
+                return
         elif (
             not self.is_pregnant
             and self.remaining_life < 2 * self.life_expectancy / 3
@@ -57,13 +61,21 @@ class Human(BaseAgent):
                 dx = nearest_human.x - self.x
                 dy = nearest_human.y - self.y
                 if dx != 0:
-                    self.x += dx // abs(dx)
+                    dx //= abs(dx)
                 if dy != 0:
-                    self.y += dy // abs(dy)
-            else:
-                super().move()
-        else:
-            super().move()
+                    dy //= abs(dy)
+
+                rotation = random.choice([-1, 0, 1])
+                if rotation == -1:  # Rotate by -45 degrees
+                    dx, dy = -dy, dx
+                elif rotation == 1:  # Rotate by 45 degrees
+                    dx, dy = dy, -dx
+
+                self.x += dx
+                self.y += dy
+                return
+
+        super().move()
 
     def fall_pregnant(self):
         super().fall_pregnant()
