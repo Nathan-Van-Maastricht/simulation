@@ -1,0 +1,7 @@
+{
+    "size": 150,
+    "percent_food": 0.098,
+    "percent_human": 0.0145,
+    "percent_bear": 0.0075,
+    "food_spawn_rate": 0.005
+}

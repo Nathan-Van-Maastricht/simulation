@@ -10,6 +10,7 @@ from OpenGL.GL import (
     GL_MODELVIEW,
 )
 import random
+import bisect
 
 from agents.human import Human
 from agents.bear import Bear
@@ -19,8 +20,8 @@ from rtree import index
 
 
 class Environment:
-    def __init__(self, size):
-        self.size = size
+    def __init__(self, config):
+        self.size = config["size"]
         self.agents = []
 
         self.food_index = index.Index()
@@ -31,6 +32,46 @@ class Environment:
         self.iteration = 0
 
         self.stats = Stats()
+        self.config = config
+
+        self.spawn_initial_agents()
+
+    def spawn_initial_agents(self):
+        cumulative_percentages = [0]
+        functions = {
+            "food": lambda *args: self.add_food(args[0], args[1]),
+            "humans": lambda *args: self.add_agent(
+                Human(
+                    self,
+                    random.randint(0, self.size),
+                    random.randint(0, self.size),
+                )
+            ),
+            "bears": lambda *args: self.add_agent(
+                Bear(
+                    self,
+                    random.randint(0, self.size),
+                    random.randint(0, self.size),
+                )
+            ),
+        }
+        percentages = {
+            "food": self.config["percent_food"],
+            "humans": self.config["percent_human"],
+            "bears": self.config["percent_bear"],
+        }
+        for percentage in percentages.values():
+            cumulative_percentages.append(cumulative_percentages[-1] + percentage)
+
+        keys = list(percentages.keys())
+
+        for i in range(self.size):
+            for j in range(self.size):
+                random_number = random.random()
+                if random_number <= cumulative_percentages[-1]:
+                    index = bisect.bisect_left(cumulative_percentages, random_number)
+                    matched_key = keys[index - 1]
+                    functions[matched_key](i, j)
 
     def add_agent(self, agent):
         self.agents.append(agent)
@@ -142,7 +183,7 @@ class Environment:
             (-1, 1),
         ]
         for food_x, food_y in list(self.food_index2id.keys()):
-            if random.random() < 0.005:
+            if random.random() < self.config["food_spawn_rate"]:
                 random.shuffle(directions)
                 for dx, dy in directions:
                     new_x, new_y = (food_x + dx) % self.size, (food_y + dy) % self.size
