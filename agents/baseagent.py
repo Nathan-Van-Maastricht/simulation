@@ -63,9 +63,9 @@ class BaseAgent(Entity):
                 child_x,
                 child_y,
                 colour=(
-                    max(0, min(self.red + (random.random() - 0.5) / 10, 1)),
-                    max(0, min(self.green + (random.random() - 0.5) / 10, 1)),
-                    max(0, min(self.blue + (random.random() - 0.5) / 10, 1)),
+                    max(0, min(self.colour[0] + (random.random() - 0.5) / 10, 1)),
+                    max(0, min(self.colour[1] + (random.random() - 0.5) / 10, 1)),
+                    max(0, min(self.colour[2] + (random.random() - 0.5) / 10, 1)),
                 ),
             )
 

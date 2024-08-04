@@ -41,8 +41,8 @@ class Human(BaseAgent):
         if self.time_before_starve < 50:
             nearest_food = self.environment.get_nearest_food(self.x, self.y)
             if nearest_food:
-                dx = nearest_food[0] - self.x
-                dy = nearest_food[1] - self.y
+                dx = nearest_food.x - self.x
+                dy = nearest_food.y - self.y
                 if dx != 0:
                     self.x += dx // abs(dx)
                 if dy != 0:

@@ -7,6 +7,7 @@ import bisect
 
 from agents.human import Human
 from agents.bear import Bear
+from agents.food import Food
 from utils.stats import Stats
 
 from rtree import index
@@ -106,17 +107,20 @@ class Environment:
         return nearest_agent
 
     def add_food(self, food_x, food_y):
-        self.food_index2id[(food_x, food_y)] = self.total_foods
-        self.food_id2index[self.total_foods] = (food_x, food_y)
-        self.food_index.insert(self.total_foods, (food_x, food_y, food_x, food_y))
+        new_food = Food(self, food_x, food_y)
+        self.food_index2id[(new_food.x, new_food.y)] = self.total_foods
+        self.food_id2index[self.total_foods] = new_food
+        self.food_index.insert(
+            self.total_foods, (new_food.x, new_food.y, new_food.x, new_food.y)
+        )
 
         self.total_foods += 1
 
-    def remove_food(self, coordinates):
-        food_id = self.food_index2id.pop(coordinates, None)
+    def remove_food(self, food):
+        food_id = self.food_index2id.pop((food.x, food.y), None)
         self.food_id2index.pop(food_id)
         if food_id is not None:
-            self.food_index.delete(food_id, (*coordinates, *coordinates))
+            self.food_index.delete(food_id, (food.x, food.y, food.x, food.y))
 
     def get_nearest_food(self, x, y):
         nearest_foods = list(self.food_index.nearest((x, y, x, y), 1))
@@ -160,32 +164,13 @@ class Environment:
             if isinstance(agent, Human):
                 nearest_food = self.get_nearest_food(agent.x, agent.y)
                 if nearest_food is not None:
-                    if agent.x == nearest_food[0] and agent.y == nearest_food[1]:
+                    if agent.x == nearest_food.x and agent.y == nearest_food.y:
                         self.stats.food_consumed += 1
                         agent.time_before_starve = agent.hunger_threshold
                         self.remove_food(nearest_food)
 
-        directions = [
-            (1, 0),
-            (-1, 0),
-            (0, 1),
-            (0, -1),
-            (1, 1),
-            (-1, -1),
-            (1, -1),
-            (-1, 1),
-        ]
-        for food_x, food_y in list(self.food_index2id.keys()):
-            if random.random() < self.config["food_spawn_rate"]:
-                random.shuffle(directions)
-                for dx, dy in directions:
-                    new_x, new_y = (food_x + dx) % self.size, (food_y + dy) % self.size
-                    if (new_x, new_y) not in self.food_index2id and (
-                        new_x,
-                        new_y,
-                    ) not in [(agent.x, agent.y) for agent in self.agents]:
-                        self.add_food(new_x, new_y)
-                        break
+        for food in self.food_id2index.copy().values():
+            food.update()
 
         self.iteration += 1
 
@@ -196,8 +181,8 @@ class Environment:
 
         # render food
         glColor3f(1, 0, 0)
-        for x, y in self.food_id2index.values():
-            glRectf(x, y, x + 1, y + 1)
+        for food in self.food_id2index.values():
+            glRectf(food.x, food.y, food.x + 1, food.y + 1)
 
         # render agents
         for agent in self.agents:
