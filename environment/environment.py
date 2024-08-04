@@ -1,13 +1,6 @@
 from OpenGL.GL import (
-    glClear,
-    glMatrixMode,
-    glLoadIdentity,
-    glOrtho,
     glColor3f,
     glRectf,
-    GL_COLOR_BUFFER_BIT,
-    GL_PROJECTION,
-    GL_MODELVIEW,
 )
 import random
 import bisect
@@ -197,13 +190,6 @@ class Environment:
         self.iteration += 1
 
     def render(self):
-        glClear(GL_COLOR_BUFFER_BIT)
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        glOrtho(0, self.size, 0, self.size, -1, 1)
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-
         # Render environment
         glColor3f(0.196, 0.588, 0.278)  # Green
         glRectf(0, 0, self.size, self.size)
@@ -213,5 +199,6 @@ class Environment:
         for x, y in self.food_id2index.values():
             glRectf(x, y, x + 1, y + 1)
 
+        # render agents
         for agent in self.agents:
             agent.render()

@@ -1,10 +1,6 @@
 from OpenGL.GL import (
-    glMatrixMode,
-    glLoadIdentity,
     glColor3f,
     glRectf,
-    GL_MODELVIEW,
-    glTranslatef,
 )
 import random
 
@@ -119,8 +115,5 @@ class BaseAgent:
         self.is_pregnant = True
 
     def render(self):
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-        glTranslatef(self.x, self.y, 0)
         glColor3f(self.red, self.green, self.blue)
-        glRectf(-0.5, -0.5, 0.5, 0.5)  # Render agent as a square
+        glRectf(self.x, self.y, self.x + 1, self.y + 1)
