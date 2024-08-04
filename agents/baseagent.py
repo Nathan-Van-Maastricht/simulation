@@ -1,31 +1,22 @@
-from OpenGL.GL import (
-    glColor3f,
-    glRectf,
-)
 import random
 
+from agents.entity import Entity
 
-class BaseAgent:
+
+class BaseAgent(Entity):
     def __init__(
         self,
         environment,
         x,
         y,
-        hunger_threshold=200,
         name=None,
-        red=0.5,
-        green=0.3,
-        blue=0.1,
+        colour=None,
+        hunger_threshold=200,
         pregnancy_duration=500,
         life_expectancy=2000,
     ):
-        if name is None:
-            self.name = f"{type(self).__name__} {random.random()}"
-        else:
-            self.name = name
-        self.environment = environment
-        self.x = x
-        self.y = y
+        super().__init__(environment, x, y, name, colour)
+
         self.directions = [
             (0, 1),
             (0, -1),
@@ -49,10 +40,6 @@ class BaseAgent:
         self.life_expectancy = life_expectancy
         self.remaining_life = life_expectancy * (1 + ((random.random() - 0.5) / 10))
 
-        self.red = red
-        self.green = green
-        self.blue = blue
-
     def update_starve(self):
         self.time_before_starve -= 1
         if self.time_before_starve <= 0:
@@ -75,9 +62,11 @@ class BaseAgent:
                 self.environment,
                 child_x,
                 child_y,
-                red=max(0, min(self.red + (random.random() - 0.5) / 10, 1)),
-                green=max(0, min(self.green + (random.random() - 0.5) / 10, 1)),
-                blue=max(0, min(self.blue + (random.random() - 0.5) / 10, 1)),
+                colour=(
+                    max(0, min(self.red + (random.random() - 0.5) / 10, 1)),
+                    max(0, min(self.green + (random.random() - 0.5) / 10, 1)),
+                    max(0, min(self.blue + (random.random() - 0.5) / 10, 1)),
+                ),
             )
 
             self.environment.add_agent(child)
@@ -113,7 +102,3 @@ class BaseAgent:
     def fall_pregnant(self):
         self.pregnancy_remaining = self.pregnancy_duration
         self.is_pregnant = True
-
-    def render(self):
-        glColor3f(self.red, self.green, self.blue)
-        glRectf(self.x, self.y, self.x + 1, self.y + 1)
