@@ -57,6 +57,8 @@ class Bear(BaseAgent):
                         self.y += dy // abs(dy)
                     elif dx != 0:
                         self.x += dx // abs(dx)
+
+                return
         elif (
             not self.is_pregnant
             and self.remaining_life < 2 * self.life_expectancy / 3
@@ -66,14 +68,22 @@ class Bear(BaseAgent):
             if nearest_bear is not None:
                 dx = nearest_bear.x - self.x
                 dy = nearest_bear.y - self.y
-                if dy != 0:
-                    self.y += dy // abs(dy)
                 if dx != 0:
-                    self.x += dx // abs(dx)
-            else:
-                super().move()
-        else:
-            super().move()
+                    dx //= abs(dx)
+                if dy != 0:
+                    dy //= abs(dy)
+
+                rotation = random.choice([-1, 0, 1])
+                if rotation == -1:  # Rotate by -45 degrees
+                    dx, dy = -dy, dx
+                elif rotation == 1:  # Rotate by 45 degrees
+                    dx, dy = dy, -dx
+
+                self.x += dx
+                self.y += dy
+                return
+
+        super().move()
 
     def update(self):
         super().update()
