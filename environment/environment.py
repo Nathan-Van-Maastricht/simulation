@@ -79,9 +79,6 @@ class Environment:
             if isinstance(agent, Human):
                 dx = abs(agent.x - agent.x)
                 dy = abs(agent.y - agent.y)
-                # Consider wrap-around
-                dx = min(dx, self.size - dx)
-                dy = min(dy, self.size - dy)
                 distance = dx**2 + dy**2
                 if distance < min_distance:
                     min_distance = distance
@@ -97,9 +94,6 @@ class Environment:
             if isinstance(agent, Bear):
                 dx = abs(agent.x - agent.x)
                 dy = abs(agent.y - agent.y)
-                # Consider wrap-around
-                dx = min(dx, self.size - dx)
-                dy = min(dy, self.size - dy)
                 distance = dx**2 + dy**2
                 if distance < min_distance:
                     min_distance = distance

@@ -16,6 +16,10 @@ def main():
             print(environment.stats)
             break
 
+    while True:
+        visualization.handle_events()
+        visualization.render()
+
 
 if __name__ == "__main__":
     main()

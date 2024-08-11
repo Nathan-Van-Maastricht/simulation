@@ -30,10 +30,9 @@ class Food(Entity):
         if random.random() < self.environment.config["food_spawn_rate"]:
             random.shuffle(directions)
             for dx, dy in directions:
-                new_x, new_y = (
-                    (self.x + dx) % self.environment.size,
-                    (self.y + dy) % self.environment.size,
-                )
+                new_x, new_y = ((self.x + dx), (self.y + dy))
+                new_x = max(0, min(new_x, self.environment.size))
+                new_y = max(0, min(new_y, self.environment.size))
                 if (new_x, new_y) not in self.environment.food_index2id and (
                     new_x,
                     new_y,

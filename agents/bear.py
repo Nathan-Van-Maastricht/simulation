@@ -58,6 +58,9 @@ class Bear(BaseAgent):
                     elif dx != 0:
                         self.x += dx // abs(dx)
 
+                self.x = min(self.environment.size, max(0, self.x))
+                self.y = min(self.environment.size, max(0, self.y))
+
                 return
         elif (
             not self.is_pregnant
@@ -81,6 +84,9 @@ class Bear(BaseAgent):
 
                 self.x += dx
                 self.y += dy
+
+                self.x = min(self.environment.size, max(0, self.x))
+                self.y = min(self.environment.size, max(0, self.y))
                 return
 
         super().move()

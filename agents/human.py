@@ -50,6 +50,9 @@ class Human(BaseAgent):
                 if dy != 0:
                     self.y += dy // abs(dy)
 
+                self.x = min(self.environment.size, max(0, self.x))
+                self.y = min(self.environment.size, max(0, self.y))
+
                 return
         elif (
             not self.is_pregnant
@@ -73,6 +76,9 @@ class Human(BaseAgent):
 
                 self.x += dx
                 self.y += dy
+                self.x = min(self.environment.size, max(0, self.x))
+                self.y = min(self.environment.size, max(0, self.y))
+
                 return
 
         super().move()

@@ -96,8 +96,11 @@ class BaseAgent(Entity):
     def move(self):
         dx, dy = random.choice(self.directions)
 
-        self.x = (self.x + dx) % self.environment.size
-        self.y = (self.y + dy) % self.environment.size
+        self.x = self.x + dx
+        self.y = self.y + dy
+
+        self.x = min(self.environment.size, max(0, self.x))
+        self.y = min(self.environment.size, max(0, self.y))
 
     def fall_pregnant(self):
         self.pregnancy_remaining = self.pregnancy_duration
